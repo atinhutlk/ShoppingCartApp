@@ -3,7 +3,7 @@ pipeline {
 
   environment {
     DOCKERHUB_CREDENTIALS_ID = 'Docker-Hub'
-    DOCKERHUB_REPO = 'atinhutlk/week7_shoppingcart'
+    DOCKERHUB_REPO = 'atinhutlk/week1_shoppingcart'
     DOCKER_IMAGE_TAG = 'latest'
     DOCKER_IMAGE_TAG_BUILD = "${BUILD_NUMBER}"
   }
