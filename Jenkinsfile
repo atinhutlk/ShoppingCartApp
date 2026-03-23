@@ -47,11 +47,7 @@ pipeline {
       }
     }
 
-    stage('Deploy to Docker Hub') {
-      when {
-        branch 'main'
-      }
-      steps {
+    stage('Deploy to Docker Hub') {      steps {
         withCredentials([
           usernamePassword(
             credentialsId: "${DOCKERHUB_CREDENTIALS_ID}",
