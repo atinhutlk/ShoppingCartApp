@@ -7,6 +7,20 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
+RUN apt-get update && apt-get install -y \
+    libgtk-3-0 \
+    libglib2.0-0 \
+    libx11-6 \
+    libxext6 \
+    libxrender1 \
+    libxtst6 \
+    libxi6 \
+    libxxf86vm1 \
+    libfontconfig1 \
+    libfreetype6 \
+    libasound2t64 \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN mvn clean package
 
-CMD ["mvn", "test"]
+CMD ["mvn", "javafx:run"]

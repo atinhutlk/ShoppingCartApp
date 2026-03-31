@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shoppingcart-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shoppingcart-app
+  template:
+    metadata:
+      labels:
+        app: shoppingcart-app
+    spec:
+      containers:
+        - name: shoppingcart-app
+          image: shoppingcartapp:latest
+          imagePullPolicy: Never
+          env:
+            - name: DISPLAY
+              value: "host.minikube.internal:0.0"
