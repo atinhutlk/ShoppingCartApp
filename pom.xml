@@ -12,12 +12,24 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
         <junit.jupiter.version>5.11.1</junit.jupiter.version>
-        <!-- Use a known available JaCoCo version and keep skip switch to control instrumentation on modern JDKs -->
         <jacoco.version>0.8.12</jacoco.version>
-        <jacoco.skip>false</jacoco.skip>
+        <javafx.version>21.0.2</javafx.version>
     </properties>
 
     <dependencies>
+        <!-- JavaFX -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
         <!-- JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -31,7 +43,7 @@
         <finalName>shoppingcart</finalName>
 
         <plugins>
-            <!-- Compile with Java 21 -->
+            <!-- Compile -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -41,13 +53,22 @@
                 </configuration>
             </plugin>
 
-            <!-- Run tests (JUnit 5) -->
+            <!-- JavaFX run -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>Main</mainClass>
+                </configuration>
+            </plugin>
+
+            <!-- Tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <!-- Optional: if you want explicit patterns -->
                     <includes>
                         <include>**/*Test.java</include>
                         <include>**/*Tests.java</include>
@@ -56,15 +77,11 @@
                 </configuration>
             </plugin>
 
-            <!-- JaCoCo coverage (skip instrumentation on very new JDKs to avoid unsupported class file versions) -->
+            <!-- Coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
-                <configuration>
-                    <!-- Use property to control skipping; default true to avoid JDK-instrumentation errors on very new JDKs -->
-                    <skip>${jacoco.skip}</skip>
-                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -82,7 +99,7 @@
                 </executions>
             </plugin>
 
-            <!-- Runnable jar manifest -->
+            <!-- Optional runnable jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
