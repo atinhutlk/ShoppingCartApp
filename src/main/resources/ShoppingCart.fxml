@@ -7,15 +7,15 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="10" alignment="TOP_LEFT" xmlns:fx="http://javafx.com/fxml"
+<VBox fx:id="rootVBox" spacing="10" alignment="TOP_LEFT" xmlns:fx="http://javafx.com/fxml"
       fx:controller="ShoppingCartController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label text="%title"/>
+    <Label fx:id="titleLabel" text="%title"/>
 
-    <ComboBox fx:id="languageComboBox" onAction="#handleChangeLanguage"/>
+    <ComboBox fx:id="languageComboBox" onAction="#handleChangeLanguage" prefWidth="160"/>
 
     <Label fx:id="itemsLabel" text="%prompt.items"/>
     <TextField fx:id="itemsField"/>
@@ -26,7 +26,7 @@
     <Label fx:id="qtyLabel" text="%prompt.qty"/>
     <TextField fx:id="qtyField"/>
 
-    <Button text="%button.calculate" onAction="#handleCalculate"/>
+    <Button fx:id="calculateButton" text="%button.calculate" onAction="#handleCalculate"/>
 
     <Label fx:id="itemTotalLabel" text="%item.total"/>
     <Label fx:id="itemTotalResultLabel" text="0.0"/>
