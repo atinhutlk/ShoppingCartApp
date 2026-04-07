@@ -13,24 +13,24 @@
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
 
-    <Label fx:id="titleLabel" text="%title"/>
+    <Label fx:id="titleLabel" text="Shopping Cart"/>
 
     <ComboBox fx:id="languageComboBox" onAction="#handleChangeLanguage" prefWidth="160"/>
 
-    <Label fx:id="itemsLabel" text="%prompt.items"/>
+    <Label fx:id="itemsLabel" text="Item Number"/>
     <TextField fx:id="itemsField"/>
 
-    <Label fx:id="priceLabel" text="%prompt.price"/>
+    <Label fx:id="priceLabel" text="Price"/>
     <TextField fx:id="priceField"/>
 
-    <Label fx:id="qtyLabel" text="%prompt.qty"/>
+    <Label fx:id="qtyLabel" text="Quantity"/>
     <TextField fx:id="qtyField"/>
 
-    <Button fx:id="calculateButton" text="%button.calculate" onAction="#handleCalculate"/>
+    <Button fx:id="calculateButton" text="Calculate" onAction="#handleCalculate"/>
 
-    <Label fx:id="itemTotalLabel" text="%item.total"/>
+    <Label fx:id="itemTotalLabel" text="Item Total"/>
     <Label fx:id="itemTotalResultLabel" text="0.0"/>
 
-    <Label fx:id="totalLabel" text="%total"/>
+    <Label fx:id="totalLabel" text="Cart Total"/>
     <Label fx:id="totalResultLabel" text="0.0"/>
 </VBox>

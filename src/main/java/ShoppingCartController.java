@@ -9,8 +9,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.Map;
 
 public class ShoppingCartController {
 
@@ -56,9 +60,14 @@ public class ShoppingCartController {
     @FXML
     private Label totalResultLabel;
 
-    private double totalCart = 0;
-    private Locale currentLocale = new Locale("en", "US");
-    private ResourceBundle bundle;
+    private double totalCart = 0.0;
+    private int totalItems = 0;
+    private String currentLanguageCode = "en_US";
+    private Locale currentLocale = Locale.US;
+    private Map<String, String> localizedTexts = new HashMap<>();
+    private final List<CartItemEntry> cartItems = new ArrayList<>();
+    private final LocalizationService localizationService = new LocalizationService();
+    private final CartService cartService = new CartService();
     private boolean updatingLanguageComboBox = false;
 
     @FXML
@@ -75,23 +84,38 @@ public class ShoppingCartController {
             }
         });
 
-        setLanguage(currentLocale);
+        setLanguage(currentLanguageCode);
     }
 
     @FXML
     private void handleCalculate() {
         try {
+            int itemNumber = Integer.parseInt(itemsField.getText());
             double price = Double.parseDouble(priceField.getText());
             int qty = Integer.parseInt(qtyField.getText());
 
             double itemTotal = CartCalculator.itemTotal(price, qty);
             totalCart = CartCalculator.addToCart(totalCart, price, qty);
+            totalItems += qty;
 
-            itemTotalResultLabel.setText(String.valueOf(itemTotal));
-            totalResultLabel.setText(String.valueOf(totalCart));
+            cartItems.add(new CartItemEntry(itemNumber, price, qty, itemTotal));
+            saveCartData();
+
+            itemTotalResultLabel.setText(String.format(Locale.US, "%.2f", itemTotal));
+            totalResultLabel.setText(String.format(Locale.US, "%.2f", totalCart));
         } catch (NumberFormatException e) {
-            itemTotalResultLabel.setText("Invalid input");
-            totalResultLabel.setText("Invalid input");
+            String invalidInput = getText("error.invalidInput", "Invalid input");
+            itemTotalResultLabel.setText(invalidInput);
+            totalResultLabel.setText(invalidInput);
+        }
+    }
+
+    private void saveCartData() {
+        try {
+            cartService.saveCartRecord(totalItems, totalCart, currentLanguageCode, cartItems);
+        } catch (SQLException e) {
+            // Keep UI responsive while logging DB failures for troubleshooting.
+            System.err.println("Failed to save cart data: " + e.getMessage());
         }
     }
 
@@ -106,60 +130,68 @@ public class ShoppingCartController {
             return;
         }
 
-        switch (selected.getCode()) {
-            case "fi_FI":
-                setLanguage(new Locale("fi", "FI"));
-                break;
-            case "sv_SE":
-                setLanguage(new Locale("sv", "SE"));
-                break;
-            case "ja_JP":
-                setLanguage(new Locale("ja", "JP"));
-                break;
-            case "ar_SA":
-                setLanguage(new Locale("ar", "SA"));
-                break;
-            default:
-                setLanguage(new Locale("en", "US"));
-                break;
-        }
+        setLanguage(selected.getCode());
     }
 
-    private void setLanguage(Locale locale) {
-        currentLocale = locale;
-        Locale.setDefault(locale);
-        bundle = ResourceBundle.getBundle("MessagesBundle", locale);
+    private void setLanguage(String languageCode) {
+        currentLanguageCode = languageCode;
+        currentLocale = toLocale(languageCode);
+        Locale.setDefault(currentLocale);
+
+        loadLocalizedTexts();
 
         updateTexts();
         updateLanguageComboBox();
-        applyTextDirection(locale);
+        applyTextDirection(currentLocale);
+    }
+
+    private Locale toLocale(String languageCode) {
+        String[] parts = languageCode.split("_");
+        if (parts.length == 2) {
+            return new Locale(parts[0], parts[1]);
+        }
+        return Locale.US;
+    }
+
+    private void loadLocalizedTexts() {
+        try {
+            localizedTexts = localizationService.getLocalizedStrings(currentLanguageCode);
+            if (localizedTexts.isEmpty() && !"en_US".equals(currentLanguageCode)) {
+                localizedTexts = localizationService.getLocalizedStrings("en_US");
+            }
+        } catch (SQLException e) {
+            localizedTexts = new HashMap<>();
+            System.err.println("Failed to load localization from database: " + e.getMessage());
+        }
     }
 
     private void updateTexts() {
-        titleLabel.setText(bundle.getString("title"));
-        itemsLabel.setText(bundle.getString("prompt.items"));
-        priceLabel.setText(bundle.getString("prompt.price"));
-        qtyLabel.setText(bundle.getString("prompt.qty"));
-        calculateButton.setText(bundle.getString("button.calculate"));
-        itemTotalLabel.setText(bundle.getString("item.total"));
-        totalLabel.setText(bundle.getString("total"));
+        titleLabel.setText(getText("title", "Shopping Cart"));
+        itemsLabel.setText(getText("prompt.items", "Item Number"));
+        priceLabel.setText(getText("prompt.price", "Price"));
+        qtyLabel.setText(getText("prompt.qty", "Quantity"));
+        calculateButton.setText(getText("button.calculate", "Calculate"));
+        itemTotalLabel.setText(getText("item.total", "Item Total"));
+        totalLabel.setText(getText("total", "Cart Total"));
+    }
+
+    private String getText(String key, String fallback) {
+        return localizedTexts.getOrDefault(key, fallback);
     }
 
     private void updateLanguageComboBox() {
         updatingLanguageComboBox = true;
 
         languageComboBox.setItems(FXCollections.observableArrayList(
-                new LanguageOption("en_US", bundle.getString("lang.english")),
-                new LanguageOption("fi_FI", bundle.getString("lang.finnish")),
-                new LanguageOption("sv_SE", bundle.getString("lang.swedish")),
-                new LanguageOption("ja_JP", bundle.getString("lang.japanese")),
-                new LanguageOption("ar_SA", bundle.getString("lang.arabic"))
+                new LanguageOption("en_US", getText("lang.english", "English")),
+                new LanguageOption("fi_FI", getText("lang.finnish", "Finnish")),
+                new LanguageOption("sv_SE", getText("lang.swedish", "Swedish")),
+                new LanguageOption("ja_JP", getText("lang.japanese", "Japanese")),
+                new LanguageOption("ar_SA", getText("lang.arabic", "Arabic"))
         ));
 
-        String currentCode = currentLocale.getLanguage() + "_" + currentLocale.getCountry();
-
         for (LanguageOption option : languageComboBox.getItems()) {
-            if (option.getCode().equals(currentCode)) {
+            if (option.getCode().equals(currentLanguageCode)) {
                 languageComboBox.setValue(option);
                 break;
             }
