@@ -1,3 +1,5 @@
+package shoppingcartapp;
+
 public class LanguageOption {
     private final String code;
     private final String displayName;

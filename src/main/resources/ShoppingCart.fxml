@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="rootVBox" spacing="10" alignment="TOP_LEFT" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="ShoppingCartController">
+      fx:controller="shoppingcartapp.ShoppingCartController">
     <padding>
         <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>

@@ -1,3 +1,5 @@
+package shoppingcartapp;
+
 public class CartItemEntry {
     private final int itemNumber;
     private final double price;

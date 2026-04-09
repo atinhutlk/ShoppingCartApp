@@ -12,8 +12,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
         <junit.jupiter.version>5.11.1</junit.jupiter.version>
-        <jacoco.version>0.8.12</jacoco.version>
+        <jacoco.version>0.8.13</jacoco.version>
         <javafx.version>21.0.2</javafx.version>
+        <sonar.coverage.exclusions>**/Main.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>
@@ -38,11 +39,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- MySQL/MariaDB JDBC -->
+        <!-- MariaDB JDBC -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.4.0</version>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.5.2</version>
         </dependency>
     </dependencies>
 
@@ -66,7 +67,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>Main</mainClass>
+                    <mainClass>shoppingcartapp.Main</mainClass>
                 </configuration>
             </plugin>
 
@@ -114,7 +115,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>Main</mainClass>
+                            <mainClass>shoppingcartapp.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

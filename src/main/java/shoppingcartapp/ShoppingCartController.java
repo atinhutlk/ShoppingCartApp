@@ -1,3 +1,5 @@
+package shoppingcartapp;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

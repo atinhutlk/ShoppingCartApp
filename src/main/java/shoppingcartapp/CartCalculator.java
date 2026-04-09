@@ -1,4 +1,9 @@
+package shoppingcartapp;
+
 public class CartCalculator {
+
+    private CartCalculator() {
+    }
 
     public static double itemTotal(double price, int qty) {
         return price * qty;
