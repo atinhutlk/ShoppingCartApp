@@ -14,7 +14,7 @@
         <junit.jupiter.version>5.11.1</junit.jupiter.version>
         <jacoco.version>0.8.13</jacoco.version>
         <javafx.version>21.0.2</javafx.version>
-        <sonar.coverage.exclusions>**/Main.java</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>**/Main.java,**/ShoppingCartController.java</sonar.coverage.exclusions>
     </properties>
 
     <dependencies>

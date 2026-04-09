@@ -89,4 +89,9 @@ Run container:
 docker run --rm shoppingcartapp
 ```
 
+## Code Coverage (SonarQube)
+Coverage metrics exclude `shoppingcartapp.Main` and `shoppingcartapp.ShoppingCartController`
+via `sonar.coverage.exclusions` in `pom.xml`.
 
+Reason: both classes are JavaFX bootstrap/UI flow classes and are not practical targets for stable
+unit tests in this project setup. This keeps coverage focused on testable business/service logic.
