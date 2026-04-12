@@ -9,13 +9,8 @@ Week 3 extension of the JavaFX shopping cart app with:
 - Java 21
 - Maven 3.9+
 - MySQL or MariaDB running locally
-
-## Quick Start
-```powershell
-Set-Location "C:\Users\Nhut Vo\Desktop\Metropolia\2nd year\SWP_1 Assignments\ShoppingCartApp"
-mvn test
-mvn javafx:run
-```
+- SonarQube local at `http://localhost:9000`
+- Docker Desktop
 
 ## Database Setup
 Run the schema script:
@@ -34,7 +29,7 @@ Seed translations included:
 - `en_US`, `fi_FI`, `sv_SE`, `ja_JP`, `ar_SA`
 
 ## Database Configuration
-Connection is managed in `src/main/java/DatabaseConnection.java`.
+Connection is managed in `src/main/java/shoppingcartapp/DatabaseConnection.java`.
 
 Environment variables (optional override):
 - `DB_URL` (default: `jdbc:mysql://localhost:3306/shopping_cart_localization?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC`)
@@ -49,49 +44,58 @@ $env:DB_USER="root"
 $env:DB_PASSWORD="1234"
 ```
 
-## Build and Run
-Build:
-
+## Build, Test, Coverage
 ```powershell
-mvn clean install
+mvn -B clean verify
 ```
 
-Run app:
+Current quality gate setup in `pom.xml`:
+- JUnit 5 enabled
+- JaCoCo report generation enabled
+- JaCoCo `check` enforces `LINE` coverage `>= 80%` on testable classes
+- Sonar properties point to local server and JaCoCo XML report
 
+> Note: `Main` and `ShoppingCartController` are excluded from coverage gates because they are JavaFX bootstrap/UI classes.
+
+## Run Application
 ```powershell
 mvn javafx:run
 ```
 
-Run tests:
-
+## SonarQube Local Scan
 ```powershell
-mvn test
+mvn -B clean verify sonar:sonar "-Dsonar.host.url=http://localhost:9000"
 ```
 
-Package JAR:
+## Jenkins Pipeline
+`Jenkinsfile` includes these stages:
+- Checkout
+- Build
+- Test
+- SonarQube Scan
+- Build Docker Image
+- Push to Docker Hub
 
-```powershell
-mvn clean package
-```
-
-Main class: `Main`
+Jenkins assumptions:
+- Maven tool name: `Maven3`
+- SonarQube server name: `SonarQube Server`
+- Docker Hub credential id: `Docker-Hub`
 
 ## Docker
 Build image:
 
 ```powershell
-docker build -t shoppingcartapp .
+docker build -t atinhutlk/shoppingcart-gui:latest .
 ```
 
-Run container:
+Run container locally:
 
 ```powershell
-docker run --rm shoppingcartapp
+docker run --rm atinhutlk/shoppingcart-gui:latest
 ```
 
-## Code Coverage (SonarQube)
-Coverage metrics exclude `shoppingcartapp.Main` and `shoppingcartapp.ShoppingCartController`
-via `sonar.coverage.exclusions` in `pom.xml`.
+Push manually (if needed):
 
-Reason: both classes are JavaFX bootstrap/UI flow classes and are not practical targets for stable
-unit tests in this project setup. This keeps coverage focused on testable business/service logic.
+```powershell
+docker push atinhutlk/shoppingcart-gui:latest
+```
