@@ -6,11 +6,14 @@ pipeline {
     }
 
     environment {
+        PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
+        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21'
+        SONARQUBE_SERVER = 'SonarQubeServer'
+        SONAR_TOKEN = 'squ_656d7853a772c152697eae36c5b3e89057efcfd4'
         DOCKERHUB_CREDENTIALS_ID = 'Docker-Hub'
         DOCKERHUB_REPO = 'atinhutlk/shoppingcart-gui'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_TAG_BUILD = "${BUILD_NUMBER}"
-        SONARQUBE_SERVER = 'SonarQubeServer'
     }
 
     stages {
@@ -21,9 +24,15 @@ pipeline {
             }
         }
 
-        stage('Build and Test') {
+        stage('Build') {
             steps {
-                bat 'mvn -B clean verify'
+                bat 'mvn clean install'
+            }
+        }
+
+        stage('Test and Coverage') {
+            steps {
+                bat 'mvn test jacoco:report'
             }
             post {
                 always {
@@ -35,12 +44,23 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv("${SONARQUBE_SERVER}") {
-                    bat 'mvn -B sonar:sonar'
+                withSonarQubeEnv('SonarQubeServer') {
+                    bat """
+                        ${tool 'SonarScanner'}\\bin\\sonar-scanner ^
+                        -Dsonar.projectKey=fliply-shoppingcart ^
+                        -Dsonar.projectName=ShoppingCartApp ^
+                        -Dsonar.projectVersion=1.0 ^
+                        -Dsonar.sources=src ^
+                        -Dsonar.host.url=http://localhost:9000 ^
+                        -Dsonar.login=%SONAR_TOKEN% ^
+                        -Dsonar.java.binaries=target/classes ^
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                    """
                 }
             }
         }
 
+        // Nếu webhook local không dùng được thì comment nguyên stage này lại
         stage('Quality Gate') {
             steps {
                 timeout(time: 5, unit: 'MINUTES') {
@@ -58,7 +78,7 @@ pipeline {
             }
         }
 
-        stage('Push to Docker Hub') {
+        stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKERHUB_CREDENTIALS_ID}") {
@@ -72,10 +92,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully: build, test, SonarQube scan, Docker build, and Docker push.'
+            echo 'Pipeline completed successfully.'
         }
         failure {
-            echo 'Pipeline failed. Check the failed stage in Jenkins logs.'
+            echo 'Pipeline failed. Check Jenkins console output.'
         }
     }
 }
