@@ -11,7 +11,6 @@ pipeline {
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_TAG_BUILD = "${BUILD_NUMBER}"
         SONARQUBE_SERVER = 'SonarQubeServer'
-        SONAR_TOKEN = 'squ_656d7853a772c152697eae36c5b3e89057efcfd4'
     }
 
     stages {
@@ -48,10 +47,11 @@ pipeline {
                         -Dsonar.projectKey=ShoppingCartApp ^
                         -Dsonar.projectName=ShoppingCartApp ^
                         -Dsonar.projectVersion=1.0 ^
-                        -Dsonar.sources=src ^
-                        -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.login=%SONAR_TOKEN% ^
+                        -Dsonar.sources=src/main/java ^
+                        -Dsonar.tests=src/test/java ^
                         -Dsonar.java.binaries=target/classes ^
+                        -Dsonar.java.test.binaries=target/test-classes ^
+                        -Dsonar.host.url=http://localhost:9000 ^
                         -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml ^
                         -Dsonar.coverage.exclusions=**/Main.java,**/ShoppingCartController.java
                     """

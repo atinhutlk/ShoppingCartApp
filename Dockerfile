@@ -16,14 +16,12 @@ RUN apt-get update && apt-get install -y \
     libxxf86vm1 \
     libfontconfig1 \
     libfreetype6 \
-    libasound2 \
+    libasound2t64 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mvn clean package
 
 FROM maven:3.9.9-eclipse-temurin-21
-
-LABEL authors="Nhut Vo"
 
 WORKDIR /app
 
@@ -40,7 +38,7 @@ RUN apt-get update && apt-get install -y \
     libxxf86vm1 \
     libfontconfig1 \
     libfreetype6 \
-    libasound2 \
+    libasound2t64 \
     && rm -rf /var/lib/apt/lists/*
 
 CMD ["mvn", "javafx:run"]
