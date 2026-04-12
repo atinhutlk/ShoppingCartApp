@@ -1,22 +1,25 @@
-# ShoppingCartApp (Week 3 / AD)
+# ShoppingCartApp 
 
-Week 3 extension of the JavaFX shopping cart app with:
-- database localization from `localization_strings`
-- cart summary persistence in `cart_records`
-- cart item persistence in `cart_items` (foreign key to `cart_records`)
+
 
 ## Prerequisites
 - Java 21
 - Maven 3.9+
-- MySQL or MariaDB running locally
+- MariaDB running locally
 - SonarQube local at `http://localhost:9000`
 - Docker Desktop
 
 ## Database Setup
-Run the schema script:
+Run the schema script with MariaDB/MySQL client tools:
 
 ```sql
 SOURCE database/schema.sql;
+```
+
+On Windows PowerShell, you can also run:
+
+```powershell
+mariadb -u root -p < database/schema.sql
 ```
 
 This creates:
@@ -32,14 +35,16 @@ Seed translations included:
 Connection is managed in `src/main/java/shoppingcartapp/DatabaseConnection.java`.
 
 Environment variables (optional override):
-- `DB_URL` (default: `jdbc:mysql://localhost:3306/shopping_cart_localization?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC`)
+- `DB_URL` (default: `jdbc:mariadb://localhost:3306/shopping_cart_localization`)
 - `DB_USER` (default: `root`)
 - `DB_PASSWORD` (default: `1234`)
+
+No `.env` file is required; you can set these variables directly in the shell if you want to override the defaults.
 
 PowerShell example:
 
 ```powershell
-$env:DB_URL="jdbc:mysql://localhost:3306/shopping_cart_localization?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+$env:DB_URL="jdbc:mariadb://localhost:3306/shopping_cart_localization"
 $env:DB_USER="root"
 $env:DB_PASSWORD="1234"
 ```
@@ -58,6 +63,8 @@ Current quality gate setup in `pom.xml`:
 > Note: `Main` and `ShoppingCartController` are excluded from coverage gates because they are JavaFX bootstrap/UI classes.
 
 ## Run Application
+Make sure MariaDB is running and `database/schema.sql` has been applied first.
+
 ```powershell
 mvn javafx:run
 ```
@@ -78,7 +85,7 @@ mvn -B clean verify sonar:sonar "-Dsonar.host.url=http://localhost:9000"
 
 Jenkins assumptions:
 - Maven tool name: `Maven3`
-- SonarQube server name: `SonarQube Server`
+- SonarQube server name: `SonarQubeServer`
 - Docker Hub credential id: `Docker-Hub`
 
 ## Docker
@@ -93,6 +100,8 @@ Run container locally:
 ```powershell
 docker run --rm atinhutlk/shoppingcart-gui:latest
 ```
+
+> Note: the Docker image only packages the JavaFX app. MariaDB must still be running separately, and if the database is on your host machine you may need to override `DB_URL` so the container can reach it.
 
 Push manually (if needed):
 
