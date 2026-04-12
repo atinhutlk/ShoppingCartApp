@@ -11,7 +11,7 @@ pipeline {
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_TAG_BUILD = "${BUILD_NUMBER}"
         SONARQUBE_SERVER = 'SonarQubeServer'
-        SONAR_TOKEN = 'squ_656d7853a772c152697eae36c5b3e89057efcfd4'
+        SONAR_TOKEN = 'TOKEN_CUA_BAN'
     }
 
     stages {
@@ -45,7 +45,7 @@ pipeline {
                 withSonarQubeEnv('SonarQubeServer') {
                     bat """
                         ${tool 'SonarScanner'}\\bin\\sonar-scanner ^
-                        -Dsonar.projectKey=fliply-shoppingcart ^
+                        -Dsonar.projectKey=ShoppingCartApp ^
                         -Dsonar.projectName=ShoppingCartApp ^
                         -Dsonar.projectVersion=1.0 ^
                         -Dsonar.sources=src ^
