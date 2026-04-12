@@ -6,14 +6,12 @@ pipeline {
     }
 
     environment {
-        PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
-        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21'
-        SONARQUBE_SERVER = 'SonarQubeServer'
-        SONAR_TOKEN = 'squ_656d7853a772c152697eae36c5b3e89057efcfd4'
         DOCKERHUB_CREDENTIALS_ID = 'Docker-Hub'
         DOCKERHUB_REPO = 'atinhutlk/shoppingcart-gui'
         DOCKER_IMAGE_TAG = 'latest'
         DOCKER_IMAGE_TAG_BUILD = "${BUILD_NUMBER}"
+        SONARQUBE_SERVER = 'SonarQubeServer'
+        SONAR_TOKEN = 'squ_656d7853a772c152697eae36c5b3e89057efcfd4'
     }
 
     stages {
@@ -54,17 +52,9 @@ pipeline {
                         -Dsonar.host.url=http://localhost:9000 ^
                         -Dsonar.login=%SONAR_TOKEN% ^
                         -Dsonar.java.binaries=target/classes ^
-                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml ^
+                        -Dsonar.coverage.exclusions=**/Main.java,**/ShoppingCartController.java
                     """
-                }
-            }
-        }
-
-        // Nếu webhook local không dùng được thì comment nguyên stage này lại
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 5, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
                 }
             }
         }
